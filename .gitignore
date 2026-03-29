@@ -1,0 +1,19 @@
+# Dependency directories
+node_modules/
+
+# Environment variables
+.env
+
+# Logs
+logs
+*.log
+npm-debug.log*
+
+# Compiled binary addons
+build/Release
+
+# OS-specific files
+.DS_Store
+
+# Optional npm cache directory
+.npm
