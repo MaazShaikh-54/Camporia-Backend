@@ -7,8 +7,19 @@ const userSchema = new mongoose.Schema(
     password: { type: String, required: true },
     role: {
       type: String,
-      enum: ["user", "admin"],
+      enum: ["user", "host", "admin"],
       default: "user",
+    },
+
+    isVerifiedHost: {
+      type: Boolean,
+      default: false,
+    },
+
+    hostDetails: {
+      campName: String,
+      location: String,
+      idProof: String,
     },
     favorites: [
       {

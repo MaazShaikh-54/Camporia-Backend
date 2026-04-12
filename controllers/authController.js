@@ -4,7 +4,7 @@ import generateToken from "../utils/generateToken.js";
 
 export const registerUser = async (req, res) => {
   try {
-    const { name, email, password } = req.body;
+    const { name, email, password, role, hostDetails } = req.body;
 
     const existingUser = await User.findOne({ email });
     if (existingUser) {
@@ -18,6 +18,9 @@ export const registerUser = async (req, res) => {
       name,
       email,
       password: hashedPassword,
+      role: role || "user",
+      hostDetails: role === "host" ? hostDetails : undefined,
+      isVerifiedHost: false,
     });
 
     await newUser.save();
@@ -43,22 +46,22 @@ export const loginUser = async (req, res) => {
       return res.status(400).json({ message: "Invalid Credentials" });
     }
 
+    if (user.role === "host" && !user.isVerifiedHost) {
+      return res.status(403).json({
+        message: "Host verification pending",
+      });
+    }
+
     const token = generateToken(user);
 
     res.json({
       token,
       userId: user._id,
       name: user.name,
+      role: user.role,
     });
   } catch (error) {
     console.error("Login error:", error);
     res.status(500).json({ error: error.message });
   }
-};
-
-export const getProfile = (req, res) => {
-  res.json({
-    message: "Protected data",
-    user: req.user,
-  });
 };

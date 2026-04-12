@@ -1,6 +1,7 @@
-import User from "../models/User";
+import User from "../models/User.js";
+import bcrypt from "bcryptjs";
 
-export const userProfile = async () => {
+export const userProfile = async (req, res) => {
   try {
     const user = await User.findById(req.user.id).select("-password");
 
@@ -14,7 +15,7 @@ export const userProfile = async () => {
   }
 };
 
-export const editUserProfile = async () => {
+export const editUserProfile = async (req, res) => {
   try {
     const { name, email, password, favorites, searchHistory } = req.body;
 
@@ -26,7 +27,10 @@ export const editUserProfile = async () => {
 
     user.name = name || user.name;
     user.email = email || user.email;
-    user.password = password || user.password;
+    if (password) {
+      const salt = await bcrypt.genSalt(10);
+      user.password = await bcrypt.hash(password, salt);
+    }
     user.favorites = favorites || user.favorites;
     user.searchHistory = searchHistory || user.searchHistory;
 
@@ -38,7 +42,7 @@ export const editUserProfile = async () => {
   }
 };
 
-export const deleteUserProfile = async () => {
+export const deleteUserProfile = async (req, res) => {
   try {
     await User.findByIdAndDelete(req.user.id);
     res.json({ message: "User profile deleted successfully" });
