@@ -1,7 +1,6 @@
 import express from "express";
 import {
     userProfile,
-    getUserProfile,
     editUserProfile,
     deleteUserProfile
 } from "../controllers/userController.js";
