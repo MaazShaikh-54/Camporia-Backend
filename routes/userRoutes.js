@@ -4,7 +4,7 @@ import {
     editUserProfile,
     deleteUserProfile
 } from "../controllers/userController.js";
-import authMiddleware from "../middleware/authMiddleware.js";
+import authMiddleware from "../middleware/auth.js";
 
 const userRouter = express.Router();
 
