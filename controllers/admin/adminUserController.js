@@ -2,7 +2,6 @@ import User from "../../models/User.js";
 
 export const getUsers = async (req, res) => {
   try {
-    console.log("USER:", req.user);
     const users = await User.find();
 
     if (users.length === 0) {
