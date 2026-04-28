@@ -11,6 +11,9 @@ import journeyRoutes from "./routes/journeyRoutes.js";
 import reviewRoutes from "./routes/reviewRoutes.js";
 import couponRoutes from "./routes/couponRoutes.js";
 
+//admin router
+import adminUserRoutes from "./routes/admin/adminUserRoutes.js";
+
 dotenv.config();
 connectDB();
 
@@ -25,6 +28,9 @@ app.use("/campsites", campsiteRoutes);
 app.use("/journeys", journeyRoutes);
 app.use("/reviews", reviewRoutes);
 app.use("/coupon", couponRoutes)
+
+//admin routes
+app.use("/admin", adminUserRoutes)
 
 const PORT = process.env.PORT || 10000;
 
