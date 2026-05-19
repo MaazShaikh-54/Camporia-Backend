@@ -160,3 +160,12 @@ export const cancelJourney = async (req, res) => {
         res.status(500).json({ message: error.message });
     }
 };
+
+export const getMyJourneys = async (req, res) => {
+    try {
+        const journeys = await Journey.find({ user: req.user.id }).populate("campsite");
+        res.status(200).json(journeys);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};

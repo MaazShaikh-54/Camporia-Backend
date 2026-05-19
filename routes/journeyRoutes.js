@@ -7,12 +7,14 @@ import {
   updateJourney,
   previewPrice,
   cancelJourney,
+  getMyJourneys,
 } from "../controllers/journeyController.js";
 
 const journeyRouter = express.Router();
 
 journeyRouter.post("/create-journey", authMiddleware, createJourney);
 journeyRouter.get("/get", getJourneys);
+journeyRouter.get("/my-journeys", authMiddleware, getMyJourneys);
 journeyRouter.get("/:id", getJourneyById);
 journeyRouter.put("/:id", updateJourney);
 journeyRouter.post("/preview-price", previewPrice);
