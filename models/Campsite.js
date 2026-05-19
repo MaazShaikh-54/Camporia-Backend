@@ -35,6 +35,8 @@ const campsiteSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
     },
+    checkInTime: { type: String, required: true },
+    checkOutTime: { type: String, required: true },
   },
   {
     timestamps: true,
