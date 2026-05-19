@@ -12,6 +12,7 @@ export const calculatePrice = ({
   checkIn,
   checkOut,
   personCount = 1,
+  coupon = null,
 }) => {
   const nights = calculateNights(checkIn, checkOut);
   const season = getSeason(checkIn);
