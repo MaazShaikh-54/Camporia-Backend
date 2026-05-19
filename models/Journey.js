@@ -1,5 +1,3 @@
-import mongoose from "mongoose";
-
 const journeySchema = new mongoose.Schema(
   {
     user: {
@@ -33,6 +31,10 @@ const journeySchema = new mongoose.Schema(
       type: Number,
       required: true,
     },
+    contactDetails: {
+      fullName: { type: String, required: true },
+      phone: { type: String, required: true },
+    },
     paymentStatus: {
       type: String,
       enum: ["pending", "paid"],
@@ -43,10 +45,16 @@ const journeySchema = new mongoose.Schema(
       enum: ["upcoming", "completed", "cancelled"],
       default: "upcoming",
     },
+    refundAmount: {
+      type: Number,
+      default: 0,
+    },
+    cancellationNote: {
+      type: String,
+      default: "",
+    },
   },
   {
     timestamps: true,
-  }
+  },
 );
-
-export default mongoose.model("Journey", journeySchema);

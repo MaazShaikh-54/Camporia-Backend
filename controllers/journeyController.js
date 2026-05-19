@@ -7,7 +7,7 @@ import { generateJourneyId } from "../utils/helpers.js";
 
 export const createJourney = async (req, res) => {
   try {
-    const { campsite, checkIn, checkOut, personCount, coupon } = req.body;
+    const { campsite, checkIn, checkOut, personCount, coupon, contactDetails } = req.body;
 
     const userId = req.user.id;
 
@@ -43,6 +43,7 @@ export const createJourney = async (req, res) => {
       checkOut,
       personCount,
       totalPrice,
+      contactDetails,
     });
 
     await journey.save();
@@ -90,13 +91,14 @@ export const updateJourney = async (req, res) => {
       return res.status(404).json({ message: "Journey not found" });
     }
 
-    const { campsite, checkIn, checkOut, personCount, paymentStatus, status } =
+    const { campsite, checkIn, checkOut, personCount, paymentStatus, status, contactDetails } =
       req.body;
 
     journey.campsite = campsite || journey.campsite;
     journey.checkIn = checkIn || journey.checkIn;
     journey.checkOut = checkOut || journey.checkOut;
     journey.personCount = personCount || journey.personCount;
+    journey.contactDetails = contactDetails || journey.contactDetails;
     journey.paymentStatus = paymentStatus || journey.paymentStatus;
     journey.status = status || journey.status;
 
@@ -109,19 +111,52 @@ export const updateJourney = async (req, res) => {
   }
 };
 
-export const deleteJourney = async (req, res) => {
-  try {
-    const journey = await Journey.findById(req.params.id);
-
-    if (!journey) {
-      return res.status(404).json({ message: "Journey not found" });
+export const previewPrice = async (req, res) => {
+    try {
+        const { campsite, checkIn, checkOut, personCount } = req.body;
+        const camp = await Campsite.findById(campsite);
+        if (!camp) return res.status(404).json({ message: "Campsite not found" });
+        const demandMultiplier = await getDemandMultiplier(campsite, checkIn);
+        const totalPrice = calculatePrice({
+            price: camp.price * demandMultiplier,
+            checkIn,
+            checkOut,
+            personCount,
+        });
+        res.status(200).json({ totalPrice });
+    } catch (error) {
+        res.status(500).json({ message: error.message });
     }
+};
 
-    await Journey.findByIdAndDelete(req.params.id);
+export const cancelJourney = async (req, res) => {
+    try {
+        const journey = await Journey.findById(req.params.id);
+        if (!journey) return res.status(404).json({ message: "Journey not found" });
 
-    res.status(200).json({ message: "Journey deleted successfully" });
-  } catch (error) {
-    console.error("Delete error:", error);
-    res.status(500).json({ message: error.message });
-  }
+        if (journey.status === "cancelled") {
+            return res.status(400).json({ message: "Journey already cancelled" });
+        }
+
+        const now = new Date();
+        const checkIn = new Date(journey.checkIn);
+        const daysUntilCheckIn = Math.ceil((checkIn - now) / (1000 * 60 * 60 * 24));
+
+        if (daysUntilCheckIn >= 7) {
+            journey.status = "cancelled";
+            journey.paymentStatus = "pending";
+            journey.refundAmount = Math.round(journey.totalPrice * 0.90);
+            journey.cancellationNote = "Cancelled 7+ days before check-in. 90% refund applicable.";
+        } else {
+            journey.status = "cancelled";
+            journey.paymentStatus = "pending";
+            journey.refundAmount = 0;
+            journey.cancellationNote = "Cancelled within 7 days of check-in. No refund.";
+        }
+
+        await journey.save();
+        res.status(200).json(journey);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
 };
