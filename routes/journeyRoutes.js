@@ -1,4 +1,5 @@
 import express from "express";
+import authMiddleware, { adminOnly } from "../../middleware/auth.js";
 import {
   createJourney,
   getJourneys,
@@ -10,7 +11,7 @@ import {
 
 const journeyRouter = express.Router();
 
-journeyRouter.post("/create-journey", createJourney);
+journeyRouter.post("/create-journey", authMiddleware, createJourney);
 journeyRouter.get("/get", getJourneys);
 journeyRouter.get("/:id", getJourneyById);
 journeyRouter.put("/:id", updateJourney);
