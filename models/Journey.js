@@ -1,3 +1,5 @@
+import mongoose from "mongoose";
+
 const journeySchema = new mongoose.Schema(
   {
     user: {
@@ -58,3 +60,5 @@ const journeySchema = new mongoose.Schema(
     timestamps: true,
   },
 );
+
+export default mongoose.model("Journey", journeySchema);
