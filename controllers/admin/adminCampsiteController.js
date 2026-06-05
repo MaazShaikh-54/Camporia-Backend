@@ -2,7 +2,7 @@ import Campsite from "../../models/Campsite.js";
 
 export const getCampsites = async (req, res) => {
     try {
-        const campsites = await Campsite.find();
+        const campsites = await Campsite.find().lean();
         if (campsites.length === 0) {
             return res.status(404).json({ message: "Campsites not found" });
         }
